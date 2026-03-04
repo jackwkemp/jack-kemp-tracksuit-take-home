@@ -15,6 +15,29 @@ By framing this as a **Greedy Bin-Packing** problem and utilizing statistical sa
 
 ---
 
+## Exploratory Data Analysis (EDA)
+Before designing the optimisation algorithm, I conducted an EDA to understand the shape and relationship of our two main constraints: **Category Rarity (Incidence Rate)** and **Survey Length**. 
+
+### 1. Understanding the Distributions
+Looking at the individual distributions, we see that the **Incidence Rates** are heavily skewed toward lower percentages (niche categories). This skew is exactly why a naive routing approach fails: grouping a rare 5% category with a common 80% category forces us to drastically over-sample the common one, wasting thousands of respondent dollars. 
+
+Meanwhile, the **Category Lengths** show a wide variance, reinforcing the need for strict algorithmic time-capping to protect the 480-second SLA.
+
+<br>
+<img src="eda_distributions.png" width="800" alt="EDA Distributions">
+<br>
+
+### 2. Correlation Check
+Furthermore, as the scatter plot demonstrates below, there is **no strong correlation** between incidence rate and category length. 
+
+<br>
+<img src="eda_scatter.png" width="500" alt="EDA Scatter Plot">
+<br>
+
+This crucial data insight validated the algorithm's architecture: because length and rarity aren't correlated, we can safely sort and pack categories primarily by their *Effective Incidence Rate* without inadvertently clustering all the long surveys together and accidentally breaching the time limit.
+
+---
+
 ## Defining the Mathematical Constraints
 To solve this efficiently, we must translate Tracksuit's business rules into mathematical constraints for every individual category ($i$).
 
